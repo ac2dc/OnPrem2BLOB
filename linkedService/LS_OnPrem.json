@@ -1,0 +1,22 @@
+{
+	"name": "LS_OnPrem",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "This linked server is associated with local SQL Server",
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"server": "SNP-HYD-LPT-025",
+			"database": "AdventureWorksDW2022",
+			"encrypt": "mandatory",
+			"trustServerCertificate": true,
+			"authenticationType": "SQL",
+			"userName": "sa",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJkMjAxNzQ0OC02MTM4LTQ5NGYtYjdiYy0zZGE4N2NmMGRjNGIiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "integrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
