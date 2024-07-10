@@ -1,0 +1,7 @@
+{
+	"name": "integrationRuntime",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "Created om 10-07-2024"
+	}
+}
