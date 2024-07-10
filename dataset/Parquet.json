@@ -8,6 +8,9 @@
 		"parameters": {
 			"table_name": {
 				"type": "string"
+			},
+			"schema_name": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -16,10 +19,10 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@{concat(dataset().table_name, '.perquet')}",
+					"value": "@{concat(dataset().table_name, '_',dataset().table_name, '.perquet')}",
 					"type": "Expression"
 				},
-				"container": "demo"
+				"container": "aw2022"
 			},
 			"compressionCodec": "snappy"
 		},
