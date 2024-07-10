@@ -1,0 +1,16 @@
+{
+	"name": "SqlServerTableSource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_OnPrem",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "sample"
+		}
+	}
+}
