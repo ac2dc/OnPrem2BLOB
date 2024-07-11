@@ -1,0 +1,105 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dfOnPremIngestion"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+		},
+		"AzureSqlDatabaseSink_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AzureSqlDatabaseSink'"
+		},
+		"LS_OnPrem_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_OnPrem'"
+		},
+		"AzureSqlDatabaseSink_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "server1010.database.windows.net"
+		},
+		"AzureSqlDatabaseSink_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "db_sql_eus"
+		},
+		"AzureSqlDatabaseSink_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "CloudSA62afd36f"
+		},
+		"LS_OnPrem_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "SNP-HYD-LPT-025"
+		},
+		"LS_OnPrem_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "AdventureWorks2022"
+		},
+		"LS_OnPrem_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "sa"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "dfOnPremIngestion_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureBlobStorage1_connectionString": {
+						"value": "[parameters('AzureBlobStorage1_connectionString')]"
+					},
+					"AzureSqlDatabaseSink_password": {
+						"value": "[parameters('AzureSqlDatabaseSink_password')]"
+					},
+					"LS_OnPrem_password": {
+						"value": "[parameters('LS_OnPrem_password')]"
+					},
+					"AzureSqlDatabaseSink_properties_typeProperties_server": {
+						"value": "[parameters('AzureSqlDatabaseSink_properties_typeProperties_server')]"
+					},
+					"AzureSqlDatabaseSink_properties_typeProperties_database": {
+						"value": "[parameters('AzureSqlDatabaseSink_properties_typeProperties_database')]"
+					},
+					"AzureSqlDatabaseSink_properties_typeProperties_userName": {
+						"value": "[parameters('AzureSqlDatabaseSink_properties_typeProperties_userName')]"
+					},
+					"LS_OnPrem_properties_typeProperties_server": {
+						"value": "[parameters('LS_OnPrem_properties_typeProperties_server')]"
+					},
+					"LS_OnPrem_properties_typeProperties_database": {
+						"value": "[parameters('LS_OnPrem_properties_typeProperties_database')]"
+					},
+					"LS_OnPrem_properties_typeProperties_userName": {
+						"value": "[parameters('LS_OnPrem_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

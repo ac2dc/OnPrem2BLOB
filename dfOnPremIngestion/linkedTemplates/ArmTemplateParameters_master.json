@@ -1,0 +1,42 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "dfOnPremIngestion"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
+		"AzureSqlDatabaseSink_password": {
+			"value": ""
+		},
+		"LS_OnPrem_password": {
+			"value": ""
+		},
+		"AzureSqlDatabaseSink_properties_typeProperties_server": {
+			"value": "server1010.database.windows.net"
+		},
+		"AzureSqlDatabaseSink_properties_typeProperties_database": {
+			"value": "db_sql_eus"
+		},
+		"AzureSqlDatabaseSink_properties_typeProperties_userName": {
+			"value": "CloudSA62afd36f"
+		},
+		"LS_OnPrem_properties_typeProperties_server": {
+			"value": "SNP-HYD-LPT-025"
+		},
+		"LS_OnPrem_properties_typeProperties_database": {
+			"value": "AdventureWorks2022"
+		},
+		"LS_OnPrem_properties_typeProperties_userName": {
+			"value": "sa"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
