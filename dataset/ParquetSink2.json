@@ -10,10 +10,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"folderPath": {
-					"value": "@string(dayOfMonth(utcnow()))",
-					"type": "Expression"
-				},
+				"fileName": "HumanResources_JobCandidate.parquet",
+				"folderPath": "incload",
 				"container": "inc"
 			},
 			"compressionCodec": "snappy"
