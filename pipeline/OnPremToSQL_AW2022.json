@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "select \n\ts.name as schema_name\n\t,t.name as table_name\nfrom sys.tables t \ninner join sys.schemas s\non t.schema_id = s.schema_id",
+						"sqlReaderQuery": "select * from control_migration\nwhere table_name not like 'control_migration'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -31,6 +31,8 @@
 			{
 				"name": "ForEach Table_copy1",
 				"type": "ForEach",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Get Tables_copy1",
