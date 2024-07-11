@@ -14,7 +14,7 @@
 					"value": "@string(dayOfMonth(utcnow()))",
 					"type": "Expression"
 				},
-				"container": "Inc"
+				"container": "inc"
 			},
 			"compressionCodec": "snappy"
 		},
