@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "select * from control_migration\nwhere table_name not like 'control_migration'",
+						"sqlReaderQuery": "select * from control_migration\nwhere id <> 6",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
