@@ -19,11 +19,11 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@{concat(dataset().table_name, '_',dataset().table_name, '.parquet')}",
+					"value": "@{concat(dataset().schema_name, '_',dataset().table_name, '.parquet')}",
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "@utcnow()",
+					"value": "@formatDateTime(utcnow(), 'yyyy-MM-dd')",
 					"type": "Expression"
 				},
 				"container": "aw2022"
