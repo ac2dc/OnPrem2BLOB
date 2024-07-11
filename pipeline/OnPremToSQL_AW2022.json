@@ -62,7 +62,7 @@
 								"source": {
 									"type": "SqlServerSource",
 									"sqlReaderQuery": {
-										"value": "select * from @{item().schema_name}.@{item().table_name}",
+										"value": "@if(equals(item().query_text,''),concat('select \n* from ', item().schema_name,'.',item().table_name),item().query_text)\n\n",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
