@@ -22,6 +22,10 @@
 					"value": "@{concat(dataset().table_name, '_',dataset().table_name, '.parquet')}",
 					"type": "Expression"
 				},
+				"folderPath": {
+					"value": "@utcnow()",
+					"type": "Expression"
+				},
 				"container": "aw2022"
 			},
 			"compressionCodec": "snappy"
