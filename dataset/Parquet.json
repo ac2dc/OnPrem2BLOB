@@ -5,27 +5,12 @@
 			"referenceName": "AzureBlobStorage1",
 			"type": "LinkedServiceReference"
 		},
-		"parameters": {
-			"table_name": {
-				"type": "string"
-			},
-			"schema_name": {
-				"type": "string"
-			}
-		},
 		"annotations": [],
 		"type": "Parquet",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": {
-					"value": "@{concat(dataset().schema_name, '_',dataset().table_name, '.parquet')}",
-					"type": "Expression"
-				},
-				"folderPath": {
-					"value": "@formatDateTime(utcnow(), 'yyyy-MM-dd')",
-					"type": "Expression"
-				},
+				"folderPath": "incload",
 				"container": "aw2022"
 			},
 			"compressionCodec": "snappy"
