@@ -10,8 +10,9 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "HumanResources_JobCandidate.parquet",
 				"folderPath": "incload",
-				"container": "aw2022"
+				"container": "inc"
 			},
 			"compressionCodec": "snappy"
 		},
