@@ -1,0 +1,38 @@
+{
+	"name": "db_blobsink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "HumanResources_JobCandidate.parquet",
+				"folderPath": "incload",
+				"container": "inc"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "JobCandidateID",
+				"type": "INT32"
+			},
+			{
+				"name": "BusinessEntityID",
+				"type": "INT32"
+			},
+			{
+				"name": "Resume",
+				"type": "UTF8"
+			},
+			{
+				"name": "ModifiedDate",
+				"type": "INT96"
+			}
+		]
+	}
+}
