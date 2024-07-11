@@ -19,7 +19,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@{concat(dataset().table_name, '_',dataset().table_name, '.perquet')}",
+					"value": "@{concat(dataset().table_name, '_',dataset().table_name, '.parquet')}",
 					"type": "Expression"
 				},
 				"container": "aw2022"
