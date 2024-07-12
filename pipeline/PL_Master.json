@@ -62,7 +62,7 @@
 								"source": {
 									"type": "SqlServerSource",
 									"sqlReaderQuery": {
-										"value": "@{concat('select max(', item().delta_column, ') from ', item().schema_name, '.', item().table_name)}",
+										"value": "@{concat('SELECT COUNT(*) as max_id FROM (', if(equals(item().query_text, ''), concat('SELECT MAX([', item().delta_column, '])  FROM [', item().schema_name, '].[', item().table_name, ']'), item().query_text), ') as subquery')}\n",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
