@@ -202,7 +202,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@{concat('select * from ', first(activity('Get config table').output.value).schema_name, '.', first(activity('Get config table').output.value).table_name, ' where load_type = ''stg''')}\n",
+													"value": "@{concat('select * from ', activity('Get config table').output.first().schema_name, '.', activity('Get config table').output.first().table_name, 'where', activity('Get config table').output.first().load_type = 'stg')}\n\n",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
