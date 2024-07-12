@@ -14,7 +14,7 @@
 					"value": "@formatDateTime(utcNow(),'ddMMMM')",
 					"type": "Expression"
 				},
-				"container": "inc"
+				"container": "test"
 			},
 			"compressionCodec": "snappy"
 		},
