@@ -109,7 +109,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@{concat('select * from ', item().schema_name, '.', item().table_name, ' where ', item().load_type, ' = ''inc''')}",
+													"value": "@{concat('select * from ', item().schema_name, '.', item().table_name)}",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -202,7 +202,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@{concat('select * from ', item().schema_name, '.', item().table_name, ' where ', item().load_type, ' = ''stg''')}\n\n\n",
+													"value": "@{concat('select * from ', item().schema_name, '.', item().table_name)}\n\n\n",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
