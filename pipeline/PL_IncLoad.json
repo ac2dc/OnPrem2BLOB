@@ -129,36 +129,6 @@
 				]
 			},
 			{
-				"name": "Update the value in metadata tbl",
-				"type": "Lookup",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": {
-							"value": "update table metadata_tbl\nset last_processed_value = @{activity('main table max id').output.value[0].last_processed_value}",
-							"type": "Expression"
-						},
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "SqlServerTableSource",
-						"type": "DatasetReference"
-					}
-				}
-			},
-			{
 				"name": "update last modified id",
 				"type": "Script",
 				"dependsOn": [
@@ -186,7 +156,7 @@
 						{
 							"type": "Query",
 							"text": {
-								"value": "update table metadata_tbl\nset last_processed_value = @{activity('main table max id').output.value[0].max_Id}\nwhere id = 11",
+								"value": "update metadata_tbl\nset last_processed_value = @{activity('main table max id').output.value[0].max_Id}\nwhere id = 11",
 								"type": "Expression"
 							}
 						}
