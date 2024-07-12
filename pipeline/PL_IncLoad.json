@@ -47,7 +47,7 @@
 					"source": {
 						"type": "SqlServerSource",
 						"sqlReaderQuery": {
-							"value": "select max(JobCandidateID) from HumanResources.JobCandidate",
+							"value": "select max(JobCandidateID) as Id from HumanResources.JobCandidate",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -61,7 +61,7 @@
 				}
 			},
 			{
-				"name": "Copy data1",
+				"name": "Inc Extract",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -86,7 +86,81 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"enableStaging": false
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "select * from HumanResources.JobCandidate\nwhere @{activity('main table max id').output.value[0].id} > @{activity('metadata table').output.value[0].last_processed_value}\n",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings",
+							"copyBehavior": "FlattenHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SqlServerTableSource",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "db_blobsink",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Update the value in metadata tbl",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Inc Extract",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "update table metadata_tbl\nset last_processed_value = @{activity('main table max id').output.value[0].last_processed_value}\nwhere id = 11",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SqlServerTableSource",
+						"type": "DatasetReference"
+					}
 				}
 			}
 		],
