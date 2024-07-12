@@ -88,6 +88,10 @@
 							],
 							"userProperties": [],
 							"typeProperties": {
+								"expression": {
+									"value": "@equals(item().load_type, 'stg')",
+									"type": "Expression"
+								},
 								"ifFalseActivities": [
 									{
 										"name": "Inc Extract",
@@ -105,7 +109,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@{concat('select * from ', activity('Get config table').output.value.schema_name,'.', activity('Get config table').output.value.table_name, 'where load_type = \"inc\"' )}",
+													"value": "@{concat('select * from ', first(activity('Get config table').output.value).schema_name, '.', first(activity('Get config table').output.value).table_name, ' where load_type = ''inc''')}",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -198,7 +202,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@{concat('select * from ', activity('Get config table').output.value.schema_name,'.', activity('Get config table').output.value.table_name, 'where load_type = \"stg\"' )}",
+													"value": "@{concat('select * from ', first(activity('Get config table').output.value).schema_name, '.', first(activity('Get config table').output.value).table_name, ' where load_type = ''stg''')}\n",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
