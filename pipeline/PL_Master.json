@@ -109,7 +109,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@{concat('select * from ', first(activity('Get config table').output.value).schema_name, '.', first(activity('Get config table').output.value).table_name, ' where load_type = ''inc''')}",
+													"value": "@{concat('select * from ', item().schema_name, '.', item().schema_name.table_name, 'where', item().schema_name.load_type ,'= inc')}",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -176,7 +176,7 @@
 												{
 													"type": "Query",
 													"text": {
-														"value": "update config_master\nset last_processed_value = @activity('Get Max Id from source tables').output.value.max_Id",
+														"value": "update config_master\nset last_processed_value = @{item().max_Id}",
 														"type": "Expression"
 													}
 												}
@@ -202,7 +202,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@{concat('select * from ', activity('Get config table').output.first().schema_name, '.', activity('Get config table').output.first().table_name, 'where', activity('Get config table').output.first().load_type = 'stg')}\n\n",
+													"value": "@{concat('select * from ', item().schema_name, '.', item().schema_name.table_name, 'where', item().schema_name.load_type ,'= stg')}\n\n",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
