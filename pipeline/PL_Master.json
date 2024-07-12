@@ -247,12 +247,6 @@
 				}
 			}
 		],
-		"parameters": {
-			"filter_clause": {
-				"type": "string",
-				"defaultValue": "load_type = 'stg'"
-			}
-		},
 		"annotations": []
 	}
 }
