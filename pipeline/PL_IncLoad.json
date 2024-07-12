@@ -47,7 +47,7 @@
 					"source": {
 						"type": "SqlServerSource",
 						"sqlReaderQuery": {
-							"value": "select max(JobCandidateID) as Id from HumanResources.JobCandidate",
+							"value": "select  max(JobCandidateID) as max_Id from HumanResources.JobCandidate\n",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -89,7 +89,7 @@
 					"source": {
 						"type": "SqlServerSource",
 						"sqlReaderQuery": {
-							"value": "select * from HumanResources.JobCandidate\nwhere @{activity('main table max id').output.value[0].id} > @{activity('metadata table').output.value[0].last_processed_value}\n",
+							"value": "select * from HumanResources.JobCandidate\nwhere @{activity('main table max id').output.value[0].Max_id} > @{activity('metadata table').output.value[0].last_processed_value}\n",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
@@ -131,6 +131,36 @@
 			{
 				"name": "Update the value in metadata tbl",
 				"type": "Lookup",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "update table metadata_tbl\nset last_processed_value = @{activity('main table max id').output.value[0].last_processed_value}",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SqlServerTableSource",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "update last modified id",
+				"type": "Script",
 				"dependsOn": [
 					{
 						"activity": "Inc Extract",
@@ -147,20 +177,21 @@
 					"secureInput": false
 				},
 				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_OnPrem",
+					"type": "LinkedServiceReference"
+				},
 				"typeProperties": {
-					"source": {
-						"type": "SqlServerSource",
-						"sqlReaderQuery": {
-							"value": "update table metadata_tbl\nset last_processed_value = @{activity('main table max id').output.value[0].last_processed_value}\nwhere id = 11",
-							"type": "Expression"
-						},
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "SqlServerTableSource",
-						"type": "DatasetReference"
-					}
+					"scripts": [
+						{
+							"type": "Query",
+							"text": {
+								"value": "update table metadata_tbl\nset last_processed_value = @{activity('main table max id').output.value[0].max_Id}\nwhere id = 11",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
 				}
 			}
 		],
