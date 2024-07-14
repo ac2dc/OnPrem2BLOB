@@ -109,7 +109,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@{concat('select * from ', item().schema_name, '.', item().table_name)}",
+													"value": "@{if(equals(item().query_text, ''), concat('select * from ', item().schema_name, '.', item().table_name), item().query_text)}",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -176,7 +176,7 @@
 												{
 													"type": "Query",
 													"text": {
-														"value": "update config_master\nset last_processed_value = @{item().max_Id}",
+														"value": "update config_master\nset last_processed_value = @{item().Id}",
 														"type": "Expression"
 													}
 												}
@@ -202,7 +202,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@{concat('select * from ', item().schema_name, '.', item().table_name)}\n\n\n",
+													"value": "@{if(equals(item().query_text, ''), concat('select * from ', item().schema_name, '.', item().table_name), item().query_text)}\n",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
