@@ -109,7 +109,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@if(equals(item().query_text, ''),\n    concat('select * from ', item().schema_name, '.', item().table_name),\n    concat(item().query_text, ' where ', item().last_processed_value, ' > ', activity('Get Max Id from deta column').output.value[0].max_id)\n)\n",
+													"value": "@if(equals(item().query_text, ''),\n    concat('select * from ', item().schema_name, '.', item().table_name),\n    concat(item().query_text, ' where ', item().last_processed_value, ' > ', activity('Get Max Id from deta column').output.value[0].max_id,'AND load_type <> \"stg\"')\n)\n",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -176,7 +176,7 @@
 												{
 													"type": "Query",
 													"text": {
-														"value": "update config_master\nset last_processed_value = @{item().Id}",
+														"value": "update config_master\nset last_processed_value = @{activity('Get Max Id from deta column').output.value[0].max_id}",
 														"type": "Expression"
 													}
 												}
