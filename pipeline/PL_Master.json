@@ -47,7 +47,7 @@
 					},
 					"activities": [
 						{
-							"name": "Get Max Id from source tables",
+							"name": "Get Max Id from deta column",
 							"type": "Lookup",
 							"dependsOn": [],
 							"policy": {
@@ -62,7 +62,7 @@
 								"source": {
 									"type": "SqlServerSource",
 									"sqlReaderQuery": {
-										"value": "@{concat('SELECT COUNT(*) as max_id FROM (', if(equals(item().query_text, ''), concat('SELECT MAX([', item().delta_column, ']) as a FROM [', item().schema_name, '].[', item().table_name, ']'), item().query_text), ') as subquery')}\n",
+										"value": "@{concat('select max(', item().delta_column, ') as max_id from ', item().schema_name, '.', item().table_name)}",
 										"type": "Expression"
 									},
 									"queryTimeout": "02:00:00",
@@ -80,7 +80,7 @@
 							"type": "IfCondition",
 							"dependsOn": [
 								{
-									"activity": "Get Max Id from source tables",
+									"activity": "Get Max Id from deta column",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -109,7 +109,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@{if(equals(item().query_text, ''), concat('select * from ', item().schema_name, '.', item().table_name), item().query_text)}",
+													"value": "@if(equals(item().query_text, ''),\n    concat('select * from ', item().schema_name, '.', item().table_name),\n    concat(item().query_text, ' where ', item().last_processed_value, ' > ', activity('Get Max Id from deta column').output.value[0].max_id)\n)\n",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
