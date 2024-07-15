@@ -186,7 +186,7 @@
 												{
 													"type": "Query",
 													"text": {
-														"value": "UPDATE config_master\nSET last_processed_value = @{activity('Get Max Id from deta column').output.value[0].max_id}\nWHERE load_type <> 'stg'\n\n",
+														"value": "UPDATE config_master\nSET last_processed_value = @{activity('Get Max Id from deta column').output.value[0].max_id}\nWHERE load_type <> 'stg' AND table_name = @{item().table_name} AND schema_name = @{item().schema_name}\n\n",
 														"type": "Expression"
 													}
 												}
