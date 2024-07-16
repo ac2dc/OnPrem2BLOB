@@ -221,7 +221,7 @@
 													"type": "Expression"
 												},
 												"root_path": {
-													"value": "@concat('https://saeusdatabricks.blob.core.windows.net/test', '//',formatDateTime(utcNow(),'ddMMMM'),'//')",
+													"value": "@concat('abfss://test@saeusdatabricks.dfs.core.windows.net', '//',formatDateTime(utcNow(),'ddMMMM'),'//')",
 													"type": "Expression"
 												}
 											}
