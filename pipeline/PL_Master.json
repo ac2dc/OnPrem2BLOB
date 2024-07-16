@@ -265,6 +265,33 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "az-db-notebook",
+				"type": "DatabricksNotebook",
+				"dependsOn": [
+					{
+						"activity": "ForEach1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"notebookPath": "/Users/bhaskarjyotidas@snp.com/Reading a parquet file"
+				},
+				"linkedServiceName": {
+					"referenceName": "ls_az_db",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"annotations": []
