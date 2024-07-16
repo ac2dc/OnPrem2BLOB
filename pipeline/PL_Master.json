@@ -193,6 +193,43 @@
 											],
 											"scriptBlockExecutionTimeout": "02:00:00"
 										}
+									},
+									{
+										"name": "az-db-notebook",
+										"type": "DatabricksNotebook",
+										"dependsOn": [
+											{
+												"activity": "update last modified id",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"notebookPath": "/Users/bhaskarjyotidas@snp.com/Reading a parquet file",
+											"baseParameters": {
+												"delta_col": {
+													"value": "@item().delta_column",
+													"type": "Expression"
+												},
+												"root_path": {
+													"value": "@concat('https://saeusdatabricks.blob.core.windows.net/test', '//',formatDateTime(utcNow(),'ddMMMM'),'//')",
+													"type": "Expression"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "ls_az_db",
+											"type": "LinkedServiceReference"
+										}
 									}
 								],
 								"ifTrueActivities": [
@@ -264,33 +301,6 @@
 							}
 						}
 					]
-				}
-			},
-			{
-				"name": "az-db-notebook",
-				"type": "DatabricksNotebook",
-				"dependsOn": [
-					{
-						"activity": "ForEach1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"notebookPath": "/Users/bhaskarjyotidas@snp.com/Reading a parquet file"
-				},
-				"linkedServiceName": {
-					"referenceName": "ls_az_db",
-					"type": "LinkedServiceReference"
 				}
 			}
 		],
