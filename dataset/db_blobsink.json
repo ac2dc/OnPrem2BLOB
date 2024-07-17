@@ -23,7 +23,7 @@
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "@formatDateTime(utcNow(), 'dd-MMM-yyyy-YYYY')\n\n",
+					"value": "@formatDateTime(utcNow(), 'dd-MMM-yyyy')\n\n",
 					"type": "Expression"
 				},
 				"container": "test"
