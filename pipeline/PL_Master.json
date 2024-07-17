@@ -193,45 +193,6 @@
 											],
 											"scriptBlockExecutionTimeout": "02:00:00"
 										}
-									},
-									{
-										"name": "Convert tables to unity catalog",
-										"type": "DatabricksNotebook",
-										"state": "Inactive",
-										"onInactiveMarkAs": "Succeeded",
-										"dependsOn": [
-											{
-												"activity": "update last modified id",
-												"dependencyConditions": [
-													"Succeeded"
-												]
-											}
-										],
-										"policy": {
-											"timeout": "0.12:00:00",
-											"retry": 0,
-											"retryIntervalInSeconds": 30,
-											"secureOutput": false,
-											"secureInput": false
-										},
-										"userProperties": [],
-										"typeProperties": {
-											"notebookPath": "/Users/bhaskarjyotidas@snp.com/Reading a parquet file",
-											"baseParameters": {
-												"delta_col": {
-													"value": "@item().delta_column",
-													"type": "Expression"
-												},
-												"root_path": {
-													"value": "@{concat('abfss://test@saeusdatabricks.dfs.core.windows.net', '//',formatDateTime(utcNow(),'ddMMMM'),'//')}",
-													"type": "Expression"
-												}
-											}
-										},
-										"linkedServiceName": {
-											"referenceName": "ls_az_db",
-											"type": "LinkedServiceReference"
-										}
 									}
 								],
 								"ifTrueActivities": [
@@ -251,7 +212,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@{if(equals(item().query_text, ''), concat('select * from ', item().schema_name, '.', item().table_name), item().query_text)}\n",
+													"value": "@{if(equals(item().query_text, ''), concat('TRUNCATE TABLE ', item().schema_name, '.', item().table_name, '; SELECT * FROM ', item().schema_name, '.', item().table_name, ';'), item().query_text)}\n\n",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
@@ -300,6 +261,51 @@
 										]
 									}
 								]
+							}
+						},
+						{
+							"name": "Convert tables to unity catalog",
+							"type": "DatabricksNotebook",
+							"dependsOn": [
+								{
+									"activity": "If Condition1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/Users/bhaskarjyotidas@snp.com/Reading a parquet file _clone",
+								"baseParameters": {
+									"delta_col": {
+										"value": "@item().delta_column",
+										"type": "Expression"
+									},
+									"root_path": {
+										"value": "@{concat('abfss://test@saeusdatabricks.dfs.core.windows.net', '//',formatDateTime(utcNow(),'dd-MMM-yyyy'),'//')}",
+										"type": "Expression"
+									},
+									"load_type": {
+										"value": "@item().load_type",
+										"type": "Expression"
+									},
+									"last_processed_value": {
+										"value": "@activity('Get Max Id from deta column').output.value",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "ls_az_db",
+								"type": "LinkedServiceReference"
 							}
 						}
 					]
