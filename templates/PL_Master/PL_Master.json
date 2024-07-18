@@ -1,0 +1,421 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name"
+		},
+		"LS_OnPrem": {
+			"type": "string"
+		},
+		"ls_az_db": {
+			"type": "string"
+		},
+		"AzureBlobStorage1": {
+			"type": "string"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_Master')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get config table",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "select * from config_master",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "SqlServerTableSource",
+								"type": "DatasetReference"
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get config table",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get config table').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Get Max Id from deta column",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"sqlReaderQuery": {
+												"value": "@{concat('select max(', item().delta_column, ') as max_id from ', item().schema_name, '.', item().table_name)}",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "SqlServerTableSource",
+											"type": "DatasetReference"
+										},
+										"firstRowOnly": false
+									}
+								},
+								{
+									"name": "If Condition1",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "Get Max Id from deta column",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@equals(item().load_type, 'ftl')",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Inc Extract",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"sqlReaderQuery": {
+															"value": "@if(equals(item().query_text, ''),\n    concat('select * from ', item().schema_name, '.', item().table_name, ' where ', item().delta_column, ' > ', item().last_processed_value),\n    concat(item().query_text, ' where ', item().delta_column, ' > ', item().last_processed_value)\n)\n",
+															"type": "Expression"
+														},
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "ParquetSink",
+														"storeSettings": {
+															"type": "AzureBlobStorageWriteSettings",
+															"copyBehavior": "FlattenHierarchy"
+														},
+														"formatSettings": {
+															"type": "ParquetWriteSettings"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "SqlServerTableSource",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "db_blobsink",
+														"type": "DatasetReference",
+														"parameters": {
+															"schema_name": {
+																"value": "@item().schema_name",
+																"type": "Expression"
+															},
+															"table_name": {
+																"value": "@item().table_name",
+																"type": "Expression"
+															}
+														}
+													}
+												]
+											},
+											{
+												"name": "update last modified id",
+												"type": "Script",
+												"dependsOn": [
+													{
+														"activity": "Inc Extract",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"linkedServiceName": {
+													"referenceName": "[parameters('LS_OnPrem')]",
+													"type": "LinkedServiceReference"
+												},
+												"typeProperties": {
+													"scripts": [
+														{
+															"type": "Query",
+															"text": {
+																"value": "UPDATE config_master\nSET last_processed_value = @{activity('Get Max Id from deta column').output.value[0].max_id}\nWHERE id = @{item().id}",
+																"type": "Expression"
+															}
+														}
+													],
+													"scriptBlockExecutionTimeout": "02:00:00"
+												}
+											}
+										],
+										"ifTrueActivities": [
+											{
+												"name": "Copy data1",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"sqlReaderQuery": {
+															"value": "@{if(equals(item().query_text, ''), concat('SELECT * FROM ', item().schema_name, '.', item().table_name), item().query_text)}\n\n\n",
+															"type": "Expression"
+														},
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "ParquetSink",
+														"storeSettings": {
+															"type": "AzureBlobStorageWriteSettings"
+														},
+														"formatSettings": {
+															"type": "ParquetWriteSettings"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "SqlServerTableSource",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "db_blobsink",
+														"type": "DatasetReference",
+														"parameters": {
+															"schema_name": {
+																"value": "@item().schema_name",
+																"type": "Expression"
+															},
+															"table_name": {
+																"value": "@item().table_name",
+																"type": "Expression"
+															}
+														}
+													}
+												]
+											}
+										]
+									}
+								},
+								{
+									"name": "Convert tables to unity catalog",
+									"type": "DatabricksNotebook",
+									"dependsOn": [
+										{
+											"activity": "If Condition1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"notebookPath": "/Users/bhaskarjyotidas@snp.com/Reading a parquet file _clone",
+										"baseParameters": {
+											"delta_col": {
+												"value": "@item().delta_column",
+												"type": "Expression"
+											},
+											"root_path": {
+												"value": "@{concat('abfss://test@saeusdatabricks.dfs.core.windows.net/', formatDateTime(utcNow(),'dd-MMM-yyyy'), '/', item().schema_name, '.', item().table_name,'.parquet')}",
+												"type": "Expression"
+											},
+											"load_type": {
+												"value": "@item().load_type",
+												"type": "Expression"
+											},
+											"last_processed_value": {
+												"value": "int(item().last_processed_value)\n",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "[parameters('ls_az_db')]",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SqlServerTableSource')]",
+				"[concat(variables('factoryId'), '/datasets/db_blobsink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SqlServerTableSource')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('LS_OnPrem')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "HumanResources",
+					"table": "JobCandidate"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/db_blobsink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('AzureBlobStorage1')]",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"schema_name": {
+						"type": "string"
+					},
+					"table_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@concat(dataset().schema_name,'.', dataset().table_name,'.parquet')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@formatDateTime(utcNow(), 'dd-MMM-yyyy')\n\n",
+							"type": "Expression"
+						},
+						"container": "test"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "JobCandidateID",
+						"type": "INT32"
+					},
+					{
+						"name": "BusinessEntityID",
+						"type": "INT32"
+					},
+					{
+						"name": "Resume",
+						"type": "UTF8"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "INT96"
+					}
+				]
+			},
+			"dependsOn": []
+		}
+	]
+}
