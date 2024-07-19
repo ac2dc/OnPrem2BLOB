@@ -289,7 +289,7 @@
 										"type": "Expression"
 									},
 									"root_path": {
-										"value": "@{concat('abfss://test@saeusdatabricks.dfs.core.windows.net/', formatDateTime(utcNow(),'dd-MMM-yyyy'), '/', item().schema_name, '.', item().table_name,'.parquet')}",
+										"value": "@{concat('abfss://test@saeusdatabricks.dfs.core.windows.net/test', '/', item().schema_name, '.', item().table_name,'.parquet')}",
 										"type": "Expression"
 									},
 									"load_type": {
