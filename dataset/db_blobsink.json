@@ -22,10 +22,7 @@
 					"value": "@concat(dataset().schema_name,'.', dataset().table_name,'.parquet')",
 					"type": "Expression"
 				},
-				"folderPath": {
-					"value": "@formatDateTime(utcNow(), 'dd-MMM-yyyy')\n\n",
-					"type": "Expression"
-				},
+				"folderPath": "test",
 				"container": "test"
 			},
 			"compressionCodec": "snappy"
