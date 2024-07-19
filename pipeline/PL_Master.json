@@ -109,7 +109,7 @@
 											"source": {
 												"type": "SqlServerSource",
 												"sqlReaderQuery": {
-													"value": "@if(equals(item().query_text, ''), concat('SELECT * FROM ', item().schema_name, '.', item().table_name), item().query_text)\n",
+													"value": "@if(equals(item().query_text, ''),\n    concat('select * from ', item().schema_name, '.', item().table_name, ' where ', item().delta_column, ' > ', item().last_processed_value),\n    concat(item().query_text, ' where ', item().delta_column, ' > ', item().last_processed_value)\n)",
 													"type": "Expression"
 												},
 												"queryTimeout": "02:00:00",
