@@ -282,7 +282,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"notebookPath": "/Users/bhaskarjyotidas@snp.com/Reading a parquet file _clone",
+								"notebookPath": "/Users/bhaskarjyotidas@snp.com/unity_inc_clone _clone",
 								"baseParameters": {
 									"delta_col": {
 										"value": "@item().delta_column",
