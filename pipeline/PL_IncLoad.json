@@ -124,7 +124,11 @@
 				"outputs": [
 					{
 						"referenceName": "db_blobsink",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"schema_name": "dbo",
+							"table_name": "temp"
+						}
 					}
 				]
 			},
