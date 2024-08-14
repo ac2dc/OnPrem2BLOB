@@ -1,0 +1,23 @@
+{
+	"name": "LS_RestService",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://management.azure.com/subscriptions/f94855b5-7262-4566-86bd-66ce557119be/providers/Microsoft.Consumption/usageDetails?api-version=2019-10-01&$filter=properties/usageStart eq '2024-05-01' and properties/usageEnd eq '2024-08-01'",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "AadServicePrincipal",
+			"servicePrincipalId": "155aade7-7388-44b1-abc3-e1d78718f372",
+			"servicePrincipalKey": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "LS_AzureKeyVault1",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "client-secret"
+			},
+			"tenant": "30bf9f37-d550-4878-9494-1041656caf27",
+			"aadResourceId": "https://management.azure.com/"
+		}
+	}
+}
